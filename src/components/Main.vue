@@ -7,9 +7,9 @@
   const translateTemplate = ref(data.translatePrompt)
   const polishTemplate = ref(data.polishPrompt)
   const dictionary = ref('')
-  const enArticle = ref('Many studies show a power-law relationship between performance and the increases in both the number of parameters and the size of the training data, which are crucial for large language models (LLMs) and provide a predictive structure for determining the most efficient setups for expanded models using the insights gained from smaller models Moreover, the extension of scaling laws to autoregressive generative models widens their relevance to encompass tasks beyond text.')
+  const enArticle = ref('')
   const zhArticle = ref('')
-  const resultText = ref('这是示例输出')
+  const resultText = ref('')
 
   const resultLoading = ref(false)
 
@@ -28,9 +28,7 @@
 
   function copyToClipboard () {
     const text = resultText.value
-    navigator.clipboard.writeText(text).then(() => {
-      console.log('Text copied to clipboard')
-    })
+    navigator.clipboard.writeText(text)
   }
 
   function countWord (text: string, en: boolean) {
@@ -87,6 +85,7 @@
       const decodedText = decoder.decode(value)
       const result = JSON.parse(decodedText)
       zhArticle.value = result.choices[0].message.content
+      console.log(done)
     }
   }
 
@@ -105,7 +104,6 @@
         } = await reader.read()
         if (done) break
         const decodedText = decoder.decode(value, { stream: true })
-        console.log('[DEBUG]: ' + decodedText)
         const textList = decodedText.split('data: ')
         for (let i = 1; i < textList.length; i++) {
           if (textList[i].substring(0, 6) === '[DONE]') break
@@ -133,6 +131,7 @@
       <v-avatar image="@/assets/assistant.svg" size="50" style="margin: auto 0" />
       <span class="assistant">AcaTrans</span>
     </div>
+
     <v-card :loading="resultLoading">
       <template #loader="{ isActive }">
         <v-progress-linear
@@ -142,7 +141,7 @@
           indeterminate
         />
       </template>
-      <v-card-text style="font-size: 16px">
+      <v-card-text style="font-size: 18px; line-height: 1.6em; margin: 10px">
         {{ resultText }}
       </v-card-text>
       <v-card-actions>
@@ -152,7 +151,7 @@
       </v-card-actions>
     </v-card>
 
-    <div class="section-box" />
+    <div class="blank" />
 
     <v-textarea
       v-model="enArticle"
@@ -161,19 +160,24 @@
       counter
       placeholder="请输入待翻译的文本"
       :rules="[v => limitAllow(v, 'article')]"
-      variant="solo"
+      variant="outlined"
     />
 
     <div class="container-h-center">
       <v-btn
         :disabled="!allowSubmit()"
+        elevation="8"
         :ripple="true"
-        size="large"
+        rounded="xl"
+        size="x-large"
+        style="font-size: 20px;"
         @click="submit"
       >GO!</v-btn>
     </div>
 
-    <v-expansion-panels class="section-box">
+    <div class="blank" />
+
+    <v-expansion-panels>
       <v-expansion-panel>
         <v-expansion-panel-title class="section-header prompt-title">
           专用词典
@@ -186,11 +190,13 @@
             counter
             rows="1"
             :rules="[v => limitAllow(v, 'dictionary')]"
-            variant="solo"
+            variant="outlined"
           />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <div class="blank" />
 
     <v-expansion-panels class="section-box">
       <v-expansion-panel>
@@ -205,11 +211,13 @@
             counter
             rows="1"
             :rules="[v => limitAllow(v, 'translate')]"
-            variant="solo"
+            variant="outlined"
           />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <div class="blank" />
 
     <v-expansion-panels class="section-box">
       <v-expansion-panel>
@@ -225,7 +233,7 @@
             counter
             rows="1"
             :rules="[limitAllow(polishTemplate, 'polish')]"
-            variant="solo"
+            variant="outlined"
           />
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -238,11 +246,6 @@
   width: 50%;
   min-width: 200px;
   margin: 30px auto;
-}
-
-.section-box {
-  padding-top: 20px;
-  padding-bottom: 20px;
 }
 
 .assistant {
@@ -262,11 +265,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
+  height: 50px;
 }
 
 .container-v-center {
   display: flex;
   height: 70px;
+}
+
+.blank {
+  height: 20px;
 }
 </style>

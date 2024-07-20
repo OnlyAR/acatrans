@@ -1,0 +1,1 @@
+import{d as r,c as p,w as o,V as s,r as t,o as _,a as e,b as c}from"./index-Dlu4j_A5.js";const f=r({__name:"default",setup(l){return(u,m)=>{const a=t("router-view"),n=t("AppFooter");return _(),p(s,null,{default:o(()=>[e(c,null,{default:o(()=>[e(a)]),_:1}),e(n)]),_:1})}}});export{f as default};
