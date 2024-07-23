@@ -1,4 +1,6 @@
 {
-  "translatePrompt": "学术论文片段翻译为中文",
-  "polishPrompt": "请优化以下中文文章的表述，使之更加流畅和专业"
+  "translatePromptSystem": "你是一个精通学术论文的翻译家",
+  "translatePrompt": "将给出的英文学术论文片段准确无误地翻译为中文",
+  "polishPromptSystem": "你是一个精通中文学术论文写作的专家",
+  "polishPrompt": "请优化以下中文文章的表述，使之更加流畅和专业，务必保持原文意思不变，不要输出结果以外的其他内容"
 }

@@ -1,17 +1,16 @@
 <script setup lang="ts">
-  import { callModel } from '@/libs/request'
-  import { ref } from 'vue'
-  import data from '@/prompt.json'
   import { buildPolishPrompt, buildTranslatePrompt } from '@/libs/prompter'
+  import { callModel } from '@/libs/request'
+  import MarkdownIt from 'markdown-it'
+  import { ref } from 'vue'
 
-  const translateTemplate = ref(data.translatePrompt)
-  const polishTemplate = ref(data.polishPrompt)
   const dictionary = ref('')
   const enArticle = ref('')
   const zhArticle = ref('')
   const resultText = ref('')
 
   const resultLoading = ref(false)
+  const markdown = new MarkdownIt()
 
   const decoder = new TextDecoder('utf-8')
 
@@ -21,6 +20,11 @@
     translate: false,
     polish: false,
   })
+
+  function renderMarkdown (input: string) {
+    console.log(markdown.render(input))
+    return markdown.render(input)
+  }
 
   function allowSubmit () {
     return !Object.values(submitLocks.value).includes(true)
@@ -72,7 +76,7 @@
   }
 
   async function translate () {
-    const messageList = buildTranslatePrompt(enArticle.value, translateTemplate.value, dictionary.value)
+    const messageList = buildTranslatePrompt(enArticle.value, dictionary.value)
     const {
       body,
       status,
@@ -90,7 +94,7 @@
   }
 
   async function polish () {
-    const messageList = buildPolishPrompt(zhArticle.value, polishTemplate.value)
+    const messageList = buildPolishPrompt(zhArticle.value)
     const {
       body,
       status,
@@ -141,9 +145,9 @@
           indeterminate
         />
       </template>
-      <v-card-text style="font-size: 18px; line-height: 1.6em; margin: 10px">
-        {{ resultText }}
-      </v-card-text>
+
+      <div id="markdown" v-html="renderMarkdown(resultText)" />
+
       <v-card-actions>
         <v-spacer />
         <span class="text-disabled">以上内容为AI生成，仅供参考和借鉴</span>
@@ -172,7 +176,8 @@
         size="x-large"
         style="font-size: 20px;"
         @click="submit"
-      >GO!</v-btn>
+      >GO!
+      </v-btn>
     </div>
 
     <div class="blank" />
@@ -190,49 +195,6 @@
             counter
             rows="1"
             :rules="[v => limitAllow(v, 'dictionary')]"
-            variant="outlined"
-          />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-
-    <div class="blank" />
-
-    <v-expansion-panels class="section-box">
-      <v-expansion-panel>
-        <v-expansion-panel-title class="section-header prompt-title">
-          翻译提示词
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <v-textarea
-            v-model="translateTemplate"
-            auto-grow
-            bg-color="#fefefe"
-            counter
-            rows="1"
-            :rules="[v => limitAllow(v, 'translate')]"
-            variant="outlined"
-          />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-
-    <div class="blank" />
-
-    <v-expansion-panels class="section-box">
-      <v-expansion-panel>
-        <v-expansion-panel-title class="section-header prompt-title">
-          润色提示词
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <v-textarea
-            v-model="polishTemplate"
-            auto-grow
-            bg-color="#fefefe"
-            class="prompt-content"
-            counter
-            rows="1"
-            :rules="[limitAllow(polishTemplate, 'polish')]"
             variant="outlined"
           />
         </v-expansion-panel-text>
@@ -275,5 +237,11 @@
 
 .blank {
   height: 20px;
+}
+
+#markdown {
+  font-size: 18px;
+  line-height: 1.6em;
+  margin: 20px 40px;
 }
 </style>
