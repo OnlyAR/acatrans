@@ -244,7 +244,7 @@
 <style scoped>
 #outer {
   width: 50%;
-  min-width: 200px;
+  min-width: 380px;
   margin: 30px auto;
 }
 

@@ -22,3 +22,4 @@ pnpm-debug.log*
 *.sw?
 
 src/api-key.json
+acatrans/
